@@ -25,4 +25,40 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// TODO: Add your tables here
+/**
+ * Game scores table - stores every game result for leaderboard and analytics
+ */
+export const gameScores = mysqlTable("gameScores", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  score: int("score").notNull(),
+  difficulty: mysqlEnum("difficulty", ["easy", "hard"]).default("easy").notNull(),
+  target: int("target").notNull(),
+  result: int("result").notNull(),
+  difference: int("difference").notNull(),
+  isPerfect: int("isPerfect").default(0).notNull(), // 0 or 1 for boolean
+  timeTaken: int("timeTaken").notNull(), // seconds
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type GameScore = typeof gameScores.$inferSelect;
+export type InsertGameScore = typeof gameScores.$inferInsert;
+
+/**
+ * User stats table - aggregated statistics per user
+ */
+export const userStats = mysqlTable("userStats", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().unique().references(() => users.id, { onDelete: "cascade" }),
+  bestScoreEasy: int("bestScoreEasy").default(0).notNull(),
+  bestScoreHard: int("bestScoreHard").default(0).notNull(),
+  totalGamesEasy: int("totalGamesEasy").default(0).notNull(),
+  totalGamesHard: int("totalGamesHard").default(0).notNull(),
+  perfectGames: int("perfectGames").default(0).notNull(),
+  averageScoreEasy: int("averageScoreEasy").default(0).notNull(),
+  averageScoreHard: int("averageScoreHard").default(0).notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type UserStats = typeof userStats.$inferSelect;
+export type InsertUserStats = typeof userStats.$inferInsert;

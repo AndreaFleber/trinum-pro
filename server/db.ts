@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, users, gameScores, userStats, InsertGameScore, InsertUserStats } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -89,4 +89,135 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+/**
+ * Get top scores for leaderboard (all difficulties or specific)
+ */
+export async function getTopScores(limit: number = 50, difficulty?: 'easy' | 'hard') {
+  const db = await getDb();
+  if (!db) return [];
+
+  const baseQuery = db
+    .select({
+      id: gameScores.id,
+      userId: gameScores.userId,
+      userName: users.name,
+      score: gameScores.score,
+      difficulty: gameScores.difficulty,
+      isPerfect: gameScores.isPerfect,
+      createdAt: gameScores.createdAt,
+    })
+    .from(gameScores)
+    .innerJoin(users, eq(gameScores.userId, users.id));
+
+  const withDifficulty = difficulty
+    ? baseQuery.where(eq(gameScores.difficulty, difficulty))
+    : baseQuery;
+
+  return await withDifficulty
+    .orderBy((t) => desc(t.score))
+    .limit(limit);
+}
+
+/**
+ * Save a game score and update user stats
+ */
+export async function saveGameScore(userId: number, score: Omit<InsertGameScore, 'userId'>) {
+  const db = await getDb();
+  if (!db) return null;
+
+  try {
+    // Insert the score
+    await db.insert(gameScores).values({
+      ...score,
+      userId,
+    } as InsertGameScore);
+
+    // Update or create user stats
+    const existingStats = await db
+      .select()
+      .from(userStats)
+      .where(eq(userStats.userId, userId))
+      .limit(1);
+
+    const difficulty = score.difficulty as 'easy' | 'hard';
+    const isBestScore =
+      difficulty === 'easy'
+        ? score.score > (existingStats[0]?.bestScoreEasy || 0)
+        : score.score > (existingStats[0]?.bestScoreHard || 0);
+
+    if (existingStats.length > 0) {
+      // Update existing stats
+      const stats = existingStats[0];
+      const updates: Record<string, any> = {};
+
+      if (difficulty === 'easy') {
+        updates.totalGamesEasy = stats.totalGamesEasy + 1;
+        if (isBestScore) updates.bestScoreEasy = score.score;
+        updates.averageScoreEasy = Math.round(
+          (stats.averageScoreEasy * stats.totalGamesEasy + score.score) /
+            (stats.totalGamesEasy + 1)
+        );
+      } else {
+        updates.totalGamesHard = stats.totalGamesHard + 1;
+        if (isBestScore) updates.bestScoreHard = score.score;
+        updates.averageScoreHard = Math.round(
+          (stats.averageScoreHard * stats.totalGamesHard + score.score) /
+            (stats.totalGamesHard + 1)
+        );
+      }
+
+      if (score.isPerfect) updates.perfectGames = stats.perfectGames + 1;
+
+      await db.update(userStats).set(updates).where(eq(userStats.userId, userId));
+    } else {
+      // Create new stats
+      const newStats: InsertUserStats = {
+        userId,
+        bestScoreEasy: difficulty === 'easy' ? score.score : 0,
+        bestScoreHard: difficulty === 'hard' ? score.score : 0,
+        totalGamesEasy: difficulty === 'easy' ? 1 : 0,
+        totalGamesHard: difficulty === 'hard' ? 1 : 0,
+        perfectGames: score.isPerfect ? 1 : 0,
+        averageScoreEasy: difficulty === 'easy' ? score.score : 0,
+        averageScoreHard: difficulty === 'hard' ? score.score : 0,
+      };
+      await db.insert(userStats).values(newStats);
+    }
+
+    return true;
+  } catch (error) {
+    console.error('[Database] Failed to save game score:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get user stats
+ */
+export async function getUserStats(userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+
+  const result = await db
+    .select()
+    .from(userStats)
+    .where(eq(userStats.userId, userId))
+    .limit(1);
+
+  return result.length > 0 ? result[0] : null;
+}
+
+/**
+ * Get user's recent scores
+ */
+export async function getUserScores(userId: number, limit: number = 10) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select()
+    .from(gameScores)
+    .where(eq(gameScores.userId, userId))
+    .orderBy((t) => desc(t.createdAt))
+    .limit(limit);
+}
