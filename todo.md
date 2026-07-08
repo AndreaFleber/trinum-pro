@@ -34,13 +34,14 @@
 - [x] Implement localStorage fallback for guest users
 - [x] Track personal best per user
 - [x] Display user profile in header
+- [x] Query invalidation after score save
 
 ### Phase 5: Leaderboard & Social
 - [x] Create global leaderboard page
 - [x] Add share result feature (copy to clipboard with emoji)
 - [x] Create shareable result format (Wordle-style)
+- [x] Add user stats display (total games, average score)
 - [ ] Implement real-time score updates (WebSocket)
-- [ ] Add user stats display (total games, average score)
 
 ### Phase 6: Difficulty Modes
 - [x] Implement Easy mode (3 numbers, 10-120 target, 30s timer)
@@ -82,6 +83,7 @@
 - [ ] Verify mobile layout on actual devices
 - [ ] Create interactive example in HowToPlay (click through 2 + 7 × 9 = 81)
 - [ ] Add end-to-end test for leaderboard refresh after score save
+- [ ] Display user stats in UI (total games, average score, personal best)
 
 ## Completed Features
 (Items will be marked as [x] upon completion)

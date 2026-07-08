@@ -146,7 +146,8 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="border-t border-slate-800 bg-slate-900/50 mt-20 py-8 text-center text-slate-400">
-        <p>© 2026 TRINUM Pro. Gioco Matematico Premium.</p>
+        <p>© 2026 Andrea Fleber. Tutti i diritti riservati.</p>
+        <p className="text-xs text-slate-500 mt-2">TRINUM Pro - Gioco Matematico Premium</p>
       </footer>
     </div>
   );
