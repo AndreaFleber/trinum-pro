@@ -14,8 +14,8 @@
 - [x] Create scoring system with time bonus
 - [x] Add game configuration for difficulty modes
 - [x] Write comprehensive unit tests for all game logic
-- [ ] Implement actual countdown timer in React UI
-- [ ] Wire game logic into React state management
+- [x] Implement actual countdown timer in React UI
+- [x] Wire game logic into React state management
 
 ### Phase 3: UI & Animations
 - [x] Create game board layout (dark premium theme)
@@ -53,8 +53,8 @@
 - [x] Create rules explanation page
 - [x] Add scoring system explanation
 - [x] Add tips and best practices
+- [x] Add interactive example (2 + 7 × 9 = 81) in How to Play
 - [ ] Create tutorial modal for first-time users
-- [ ] Add interactive example (2 + 7 × 9 = 81)
 
 ### Phase 8: Mobile Optimization
 - [x] Responsive design implemented
@@ -66,19 +66,22 @@
 ### Phase 9: Polish & Testing
 - [x] Write unit tests for game logic (26 tests passing)
 - [x] Test all edge cases (division by zero, incomplete expressions)
-- [ ] Verify leaderboard updates in real-time
+- [x] Verify leaderboard updates after score save (query invalidation)
 - [ ] Test authentication flow end-to-end
 - [ ] Cross-browser testing
 - [ ] Performance optimization
 
 ## Bug Fixes & Improvements
-- [ ] Fix difficulty switching - use effect to ensure state is updated before startNewGame
-- [ ] Add query invalidation after score save (leaderboard refresh)
-- [ ] Add error handling for clipboard.writeText failures
-- [ ] Fix Hard mode grid layout (4 numbers should use grid-cols-4 or responsive)
+- [x] Fix difficulty switching - use effect to ensure state is updated before startNewGame
+- [x] Add query invalidation after score save (leaderboard refresh)
+- [x] Add error handling for clipboard.writeText failures (with fallback)
+- [x] Fix Hard mode grid layout (4 numbers should use grid-cols-4 or responsive)
+- [x] Add onSuccess/onError handlers to saveScoreMutation
+- [x] Add guard for navigator.clipboard availability
 - [ ] Add persistent header with user profile across all pages
 - [ ] Verify mobile layout on actual devices
-- [ ] Add onSuccess/onError handlers to saveScoreMutation
+- [ ] Create interactive example in HowToPlay (click through 2 + 7 × 9 = 81)
+- [ ] Add end-to-end test for leaderboard refresh after score save
 
 ## Completed Features
 (Items will be marked as [x] upon completion)

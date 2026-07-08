@@ -30,26 +30,38 @@ export default function GameBoard() {
   const [showResult, setShowResult] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
 
-  const saveScoreMutation = trpc.game.saveScore.useMutation();
+  const utils = trpc.useUtils();
+  const saveScoreMutation = trpc.game.saveScore.useMutation({
+    onSuccess: async () => {
+      await utils.game.getTopScores.invalidate();
+      await utils.game.getUserStats.invalidate();
+    },
+    onError: (error) => {
+      console.error('Errore nel salvataggio del punteggio:', error);
+      // Optionally show a toast or alert to user
+    },
+  });
   const getTopScoresQuery = trpc.game.getTopScores.useQuery({ limit: 50, difficulty });
   const getUserStatsQuery = trpc.game.getUserStats.useQuery(undefined, { enabled: !!user });
 
   const config = GAME_CONFIGS[difficulty];
+  const numberGridCols = difficulty === 'easy' ? 'grid-cols-3' : 'grid-cols-4';
 
   // Initialize game
   const startNewGame = useCallback(() => {
     const newNumbers = generateNumbers(difficulty);
     const newTarget = generateTarget(difficulty);
+    const newConfig = GAME_CONFIGS[difficulty];
     setNumbers(newNumbers);
     setTarget(newTarget);
     setExpression([]);
     setUsed(new Array(newNumbers.length).fill(false));
-    setTimer(config.timerSeconds);
+    setTimer(newConfig.timerSeconds);
     setGameActive(true);
     setShowResult(false);
     setResult(null);
     setScore(0);
-  }, [difficulty, config.timerSeconds]);
+  }, [difficulty]);
 
   // Timer effect
   useEffect(() => {
@@ -179,16 +191,26 @@ export default function GameBoard() {
       window.location.href
     );
 
-    navigator.clipboard.writeText(shareText).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard
+        .writeText(shareText)
+        .then(() => {
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        })
+        .catch(() => {
+          alert('Impossibile copiare negli appunti. Prova di nuovo.');
+        });
+    } else {
+      // Fallback for browsers without clipboard API
+      alert('Copia manualmente: ' + shareText);
+    }
   };
 
-  // Initialize game on mount
+  // Initialize game on mount and when difficulty changes
   useEffect(() => {
     startNewGame();
-  }, [startNewGame]);
+  }, [difficulty]); // Only depend on difficulty, startNewGame will use current difficulty
 
   const isPerfect = result !== null && Math.abs(target - result) === 0;
   const isClose = result !== null && Math.abs(target - result) <= 5;
@@ -209,10 +231,7 @@ export default function GameBoard() {
           {(['easy', 'hard'] as const).map(diff => (
             <button
               key={diff}
-              onClick={() => {
-                setDifficulty(diff);
-                startNewGame();
-              }}
+              onClick={() => setDifficulty(diff)}
               disabled={gameActive}
               className={`px-6 py-2 rounded-lg font-bold transition-all ${
                 difficulty === diff
@@ -255,7 +274,7 @@ export default function GameBoard() {
         {/* Numbers */}
         <div className="mb-8">
           <div className="text-xs text-slate-400 uppercase tracking-wider mb-3">Numeri</div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className={`grid ${numberGridCols} gap-3`}>
             {numbers.map((num, i) => (
               <button
                 key={i}
