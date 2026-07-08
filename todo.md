@@ -78,7 +78,7 @@
 - [x] Fix Hard mode grid layout (4 numbers should use grid-cols-4 or responsive)
 - [x] Add onSuccess/onError handlers to saveScoreMutation
 - [x] Add guard for navigator.clipboard availability
-- [ ] Add persistent header with user profile across all pages
+- [x] Add persistent header with user profile across all pages
 - [ ] Verify mobile layout on actual devices
 - [ ] Create interactive example in HowToPlay (click through 2 + 7 × 9 = 81)
 - [ ] Add end-to-end test for leaderboard refresh after score save

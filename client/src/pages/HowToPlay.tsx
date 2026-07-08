@@ -1,13 +1,15 @@
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useLocation } from 'wouter';
+import AppHeader from '@/components/AppHeader';
 
 export default function HowToPlay() {
   const [, navigate] = useLocation();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white p-4">
-      <div className="max-w-3xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white">
+      <AppHeader />
+      <div className="max-w-3xl mx-auto p-4">
         {/* Header */}
         <div className="text-center mb-8 pt-4">
           <h1 className="text-5xl font-black mb-2 bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">

@@ -3,6 +3,7 @@ import { useAuth } from '@/_core/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { trpc } from '@/lib/trpc';
+import AppHeader from '@/components/AppHeader';
 import {
   GAME_CONFIGS,
   calculateExpression,
@@ -216,8 +217,9 @@ export default function GameBoard() {
   const isClose = result !== null && Math.abs(target - result) <= 5;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white p-4">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white">
+      <AppHeader />
+      <div className="max-w-2xl mx-auto p-4">
         {/* Header */}
         <div className="text-center mb-8 pt-4">
           <h1 className="text-5xl font-black mb-2 bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
