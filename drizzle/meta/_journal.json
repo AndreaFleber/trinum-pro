@@ -1,19 +1,12 @@
 {
   "version": "7",
-  "dialect": "mysql",
+  "dialect": "postgresql",
   "entries": [
     {
       "idx": 0,
-      "version": "5",
-      "when": 1783513292286,
-      "tag": "0000_high_ricochet",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1783517548919,
-      "tag": "0001_certain_red_skull",
+      "version": "7",
+      "when": 1783631697967,
+      "tag": "0000_common_korath",
       "breakpoints": true
     }
   ]

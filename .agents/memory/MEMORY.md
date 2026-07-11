@@ -1,0 +1,1 @@
+- [Supabase + Google OAuth setup](supabase-google-oauth.md) — DB is Supabase (SUPABASE_DATABASE_URL, not DATABASE_URL); auth is Google OAuth; see replit.md for full details.
