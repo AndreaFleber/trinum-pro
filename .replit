@@ -37,3 +37,8 @@ externalPort = 80
 
 [userenv.shared]
 APP_BASE_URL = "https://fbcc6168-e812-4474-8e9f-ad71a879f072-00-1arf02scifn5r.pike.replit.dev"
+
+[deployment]
+deploymentTarget = "autoscale"
+run = ["node", "dist/index.js"]
+build = ["pnpm", "build"]
