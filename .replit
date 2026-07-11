@@ -36,7 +36,12 @@ externalPort = 80
 [userenv]
 
 [userenv.shared]
+
+[userenv.development]
 APP_BASE_URL = "https://fbcc6168-e812-4474-8e9f-ad71a879f072-00-1arf02scifn5r.pike.replit.dev"
+
+[userenv.production]
+APP_BASE_URL = "https://trinum-pro--alfiereina6.replit.app"
 
 [deployment]
 deploymentTarget = "autoscale"
