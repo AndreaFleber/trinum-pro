@@ -217,11 +217,14 @@ export default function GameBoard() {
   const isClose = result !== null && Math.abs(target - result) <= 5;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white">
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white flex flex-col">
       <AppHeader />
-      <div className="max-w-2xl mx-auto p-4">
-        {/* Header */}
-        <div className="text-center mb-8 pt-4">
+
+      {/* Game area: on mobile fill the remaining viewport height without scroll */}
+      <div className="flex-1 flex flex-col max-w-2xl mx-auto w-full px-3 sm:px-4 py-2 sm:py-4 min-h-0">
+
+        {/* Title — hidden on mobile (already shown in AppHeader) */}
+        <div className="hidden sm:block text-center mb-8 pt-4">
           <h1 className="text-5xl font-black mb-2 bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
             TRINUM
           </h1>
@@ -229,13 +232,13 @@ export default function GameBoard() {
         </div>
 
         {/* Difficulty Selector */}
-        <div className="flex gap-4 justify-center mb-8">
+        <div className="flex gap-3 justify-center mb-2 sm:mb-8">
           {(['easy', 'hard'] as const).map(diff => (
             <button
               key={diff}
               onClick={() => setDifficulty(diff)}
               disabled={gameActive}
-              className={`px-6 py-2 rounded-lg font-bold transition-all ${
+              className={`px-5 py-1.5 rounded-lg font-bold text-sm sm:text-base transition-all ${
                 difficulty === diff
                   ? diff === 'easy'
                     ? 'bg-emerald-500 text-white'
@@ -249,40 +252,40 @@ export default function GameBoard() {
         </div>
 
         {/* Stats Panel */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
-          <Card className="bg-slate-800 border-slate-700 p-4 text-center">
-            <div className="text-xs text-slate-400 uppercase tracking-wider mb-1">Best</div>
-            <div className="text-3xl font-black text-emerald-400">{bestScore}</div>
+        <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-2 sm:mb-8">
+          <Card className="bg-slate-800 border-slate-700 p-2 sm:p-4 text-center">
+            <div className="text-[10px] sm:text-xs text-slate-400 uppercase tracking-wider mb-0.5 sm:mb-1">Best</div>
+            <div className="text-xl sm:text-3xl font-black text-emerald-400">{bestScore}</div>
           </Card>
-          <Card className="bg-slate-800 border-slate-700 p-4 text-center">
-            <div className="text-xs text-slate-400 uppercase tracking-wider mb-1">Tempo</div>
-            <div className={`text-3xl font-black ${timer <= 10 ? 'text-red-400' : 'text-yellow-400'}`}>
+          <Card className="bg-slate-800 border-slate-700 p-2 sm:p-4 text-center">
+            <div className="text-[10px] sm:text-xs text-slate-400 uppercase tracking-wider mb-0.5 sm:mb-1">Tempo</div>
+            <div className={`text-xl sm:text-3xl font-black ${timer <= 10 ? 'text-red-400' : 'text-yellow-400'}`}>
               {timer}s
             </div>
           </Card>
-          <Card className="bg-slate-800 border-slate-700 p-4 text-center">
-            <div className="text-xs text-slate-400 uppercase tracking-wider mb-1">Target</div>
-            <div className="text-3xl font-black text-emerald-400">{target}</div>
+          <Card className="bg-slate-800 border-slate-700 p-2 sm:p-4 text-center">
+            <div className="text-[10px] sm:text-xs text-slate-400 uppercase tracking-wider mb-0.5 sm:mb-1">Target</div>
+            <div className="text-xl sm:text-3xl font-black text-emerald-400">{target}</div>
           </Card>
         </div>
 
         {/* Expression Display */}
-        <Card className="bg-slate-800 border-slate-700 p-6 mb-8 min-h-24 flex items-center justify-center">
-          <div className="text-4xl font-bold text-center text-slate-100 break-words">
+        <Card className="bg-slate-800 border-slate-700 px-4 py-2 sm:p-6 mb-2 sm:mb-8 min-h-[52px] sm:min-h-24 flex items-center justify-center">
+          <div className="text-2xl sm:text-4xl font-bold text-center text-slate-100 break-words">
             {expression.length === 0 ? '...' : formatExpression(expression)}
           </div>
         </Card>
 
         {/* Numbers */}
-        <div className="mb-8">
-          <div className="text-xs text-slate-400 uppercase tracking-wider mb-3">Numeri</div>
-          <div className={`grid ${numberGridCols} gap-3`}>
+        <div className="mb-2 sm:mb-8">
+          <div className="text-[10px] sm:text-xs text-slate-400 uppercase tracking-wider mb-1.5 sm:mb-3">Numeri</div>
+          <div className={`grid ${numberGridCols} gap-2 sm:gap-3`}>
             {numbers.map((num, i) => (
               <button
                 key={i}
                 onClick={() => addNumber(i)}
                 disabled={!gameActive || used[i]}
-                className={`aspect-square rounded-xl font-bold text-2xl transition-all ${
+                className={`h-14 sm:aspect-square sm:h-auto rounded-xl font-bold text-xl sm:text-2xl transition-all ${
                   used[i]
                     ? 'bg-slate-700 text-slate-500 opacity-30 cursor-not-allowed'
                     : 'bg-slate-700 text-white hover:bg-slate-600 active:scale-95'
@@ -295,15 +298,15 @@ export default function GameBoard() {
         </div>
 
         {/* Operators */}
-        <div className="mb-8">
-          <div className="text-xs text-slate-400 uppercase tracking-wider mb-3">Operatori</div>
-          <div className="grid grid-cols-4 gap-3">
+        <div className="mb-2 sm:mb-8">
+          <div className="text-[10px] sm:text-xs text-slate-400 uppercase tracking-wider mb-1.5 sm:mb-3">Operatori</div>
+          <div className="grid grid-cols-4 gap-2 sm:gap-3">
             {['+', '-', '*', '/'].map(op => (
               <button
                 key={op}
                 onClick={() => addOperator(op)}
                 disabled={!gameActive}
-                className={`aspect-square rounded-xl font-bold text-2xl transition-all ${
+                className={`h-12 sm:aspect-square sm:h-auto rounded-xl font-bold text-xl sm:text-2xl transition-all ${
                   !gameActive
                     ? 'bg-slate-700 text-slate-500 opacity-50 cursor-not-allowed'
                     : 'bg-slate-600 text-emerald-400 hover:bg-slate-500 active:scale-95'
@@ -316,25 +319,25 @@ export default function GameBoard() {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-3 mb-8">
+        <div className="flex gap-2 sm:gap-3 mb-2 sm:mb-8">
           <Button
             onClick={undoMove}
             disabled={!gameActive || expression.length === 0}
             variant="outline"
-            className="flex-1 bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
+            className="flex-1 h-10 sm:h-auto bg-slate-700 border-slate-600 text-white hover:bg-slate-600 text-sm"
           >
             ↶ Annulla
           </Button>
           <Button
             onClick={finishGame}
             disabled={!gameActive}
-            className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold"
+            className="flex-1 h-10 sm:h-auto bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm"
           >
             ✓ Verifica
           </Button>
           <Button
             onClick={startNewGame}
-            className="flex-1 bg-cyan-500 hover:bg-cyan-600 text-white font-bold"
+            className="flex-1 h-10 sm:h-auto bg-cyan-500 hover:bg-cyan-600 text-white font-bold text-sm"
           >
             ⟳ Nuova
           </Button>
