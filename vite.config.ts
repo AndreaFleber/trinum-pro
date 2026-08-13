@@ -6,10 +6,6 @@ import path from "node:path";
 import { defineConfig, type Plugin, type ViteDevServer } from "vite";
 import { vitePluginManusRuntime } from "vite-plugin-manus-runtime";
 
-// =============================================================================
-// Manus Debug Collector - Vite Plugin
-// =============================================================================
-
 const PROJECT_ROOT = import.meta.dirname;
 const LOG_DIR = path.join(PROJECT_ROOT, ".manus-logs");
 const MAX_LOG_SIZE_BYTES = 1 * 1024 * 1024;
@@ -33,9 +29,10 @@ function trimLogFile(logPath: string, maxSize: number) {
     const keptLines: string[] = [];
     let keptBytes = 0;
 
+    const targetSize = TRIM_TARGET_BYTES;
     for (let i = lines.length - 1; i >= 0; i--) {
       const lineBytes = Buffer.byteLength(`${lines[i]}\n`, "utf-8");
-      if (keptBytes + lineBytes > TRIM_TARGET_BYTES) break;
+      if (keptBytes + lineBytes > targetSize) break;
       keptLines.unshift(lines[i]);
       keptBytes += lineBytes;
     }
@@ -69,7 +66,6 @@ function vitePluginManusDebugCollector(): Plugin {
       if (process.env.NODE_ENV === "production") {
         return html;
       }
-
       return {
         html,
         tags: [
@@ -95,11 +91,9 @@ function vitePluginManusDebugCollector(): Plugin {
           if (payload.consoleLogs?.length > 0) {
             writeToLogFile("browserConsole", payload.consoleLogs);
           }
-
           if (payload.networkRequests?.length > 0) {
             writeToLogFile("networkRequests", payload.networkRequests);
           }
-
           if (payload.sessionEvents?.length > 0) {
             writeToLogFile("sessionReplay", payload.sessionEvents);
           }
@@ -109,21 +103,17 @@ function vitePluginManusDebugCollector(): Plugin {
         };
 
         const reqBody = (req as { body?: unknown }).body;
-
         if (reqBody && typeof reqBody === "object") {
           try {
             handlePayload(reqBody);
           } catch (e) {
             res.writeHead(400, { "Content-Type": "application/json" });
-            res.end(
-              JSON.stringify({ success: false, error: String(e) })
-            );
+            res.end(JSON.stringify({ success: false, error: String(e) }));
           }
           return;
         }
 
         let body = "";
-
         req.on("data", (chunk) => {
           body += chunk.toString();
         });
@@ -134,9 +124,7 @@ function vitePluginManusDebugCollector(): Plugin {
             handlePayload(payload);
           } catch (e) {
             res.writeHead(400, { "Content-Type": "application/json" });
-            res.end(
-              JSON.stringify({ success: false, error: String(e) })
-            );
+            res.end(JSON.stringify({ success: false, error: String(e) }));
           }
         });
       });
@@ -153,9 +141,9 @@ const plugins = [
 ];
 
 export default defineConfig({
-  plugins,
-
   base: "/trinum-pro/",
+
+  plugins,
 
   resolve: {
     alias: {
